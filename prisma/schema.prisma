@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  code      String   @unique @db.VarChar(50)
+  unit      String?  @db.VarChar(20)
+  category  String?  @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  warehouseProducts WarehouseProduct[]
+  transactions      Transaction[]
+
+  @@map("products")
+}
+
+model Warehouse {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  location  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  warehouseProducts WarehouseProduct[]
+  transactions      Transaction[]
+  sourceTransfers   Transaction[]      @relation("SourceWarehouse")
+  targetTransfers   Transaction[]      @relation("TargetWarehouse")
+
+  @@map("warehouses")
+}
+
+model WarehouseProduct {
+  warehouseId Int @map("warehouse_id")
+  productId   Int @map("product_id")
+  stok        Int @default(0)
+  hargaBeli   Int? @map("harga_beli")
+  hargaJual   Int? @map("harga_jual")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([warehouseId, productId])
+  @@map("warehouse_products")
+}
+
+model Transaction {
+  id                  Int      @id @default(autoincrement())
+  productId           Int?     @map("product_id")
+  warehouseId         Int?     @map("warehouse_id")
+  type                String   @db.VarChar(10)
+  quantity            Int
+  note                String?
+  sourceWarehouseId   Int?     @map("source_warehouse_id")
+  targetWarehouseId   Int?     @map("target_warehouse_id")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  product         Product?   @relation(fields: [productId], references: [id])
+  warehouse       Warehouse? @relation(fields: [warehouseId], references: [id])
+  sourceWarehouse Warehouse? @relation("SourceWarehouse", fields: [sourceWarehouseId], references: [id])
+  targetWarehouse Warehouse? @relation("TargetWarehouse", fields: [targetWarehouseId], references: [id])
+
+  @@map("transactions")
+}
