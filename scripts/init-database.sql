@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS warehouses (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create warehouse_products pivot table
+-- Create warehouse_products table (pivot table)
 CREATE TABLE IF NOT EXISTS warehouse_products (
   warehouse_id INTEGER REFERENCES warehouses(id) ON DELETE CASCADE,
   product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
@@ -38,7 +38,15 @@ CREATE TABLE IF NOT EXISTS transactions (
   type VARCHAR(10) CHECK (type IN ('IN', 'OUT', 'TRANSFER')),
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   note TEXT,
-  source_warehouse_id INTEGER,
-  target_warehouse_id INTEGER,
+  source_warehouse_id INTEGER REFERENCES warehouses(id),
+  target_warehouse_id INTEGER REFERENCES warehouses(id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_warehouse_products_warehouse ON warehouse_products(warehouse_id);
+CREATE INDEX IF NOT EXISTS idx_warehouse_products_product ON warehouse_products(product_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_product ON transactions(product_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_warehouse ON transactions(warehouse_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
+CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at);

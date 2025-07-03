@@ -8,7 +8,8 @@ export async function GET() {
     })
     return NextResponse.json(warehouses)
   } catch (error) {
-    return NextResponse.json({ message: "Terjadi kesalahan saat mengambil data gudang" }, { status: 500 })
+    console.error("Get warehouses error:", error)
+    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
   }
 }
 
@@ -17,6 +18,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, location } = body
 
+    // Validate required fields
+    if (!name || !location) {
+      return NextResponse.json({ message: "Nama dan lokasi gudang wajib diisi" }, { status: 400 })
+    }
+
     const warehouse = await prisma.warehouse.create({
       data: {
         name,
@@ -24,8 +30,9 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(warehouse, { status: 201 })
+    return NextResponse.json(warehouse)
   } catch (error) {
-    return NextResponse.json({ message: "Terjadi kesalahan saat menambah gudang" }, { status: 500 })
+    console.error("Create warehouse error:", error)
+    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
   }
 }

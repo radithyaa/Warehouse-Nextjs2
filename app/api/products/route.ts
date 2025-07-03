@@ -8,7 +8,8 @@ export async function GET() {
     })
     return NextResponse.json(products)
   } catch (error) {
-    return NextResponse.json({ message: "Terjadi kesalahan saat mengambil data produk" }, { status: 500 })
+    console.error("Get products error:", error)
+    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
   }
 }
 
@@ -17,26 +18,26 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, code, unit, category } = body
 
-    // Check if code already exists
-    const existingProduct = await prisma.product.findUnique({
-      where: { code },
-    })
-
-    if (existingProduct) {
-      return NextResponse.json({ message: "Kode produk sudah digunakan" }, { status: 400 })
+    // Validate required fields
+    if (!name || !code) {
+      return NextResponse.json({ message: "Nama dan kode produk wajib diisi" }, { status: 400 })
     }
 
     const product = await prisma.product.create({
       data: {
         name,
         code,
-        unit: unit || null,
-        category: category || null,
+        unit,
+        category,
       },
     })
 
-    return NextResponse.json(product, { status: 201 })
-  } catch (error) {
-    return NextResponse.json({ message: "Terjadi kesalahan saat menambah produk" }, { status: 500 })
+    return NextResponse.json(product)
+  } catch (error: any) {
+    console.error("Create product error:", error)
+    if (error.code === "P2002") {
+      return NextResponse.json({ message: "Kode produk sudah digunakan" }, { status: 400 })
+    }
+    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
   }
 }

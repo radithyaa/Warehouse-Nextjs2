@@ -5,35 +5,44 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 
 async function getDashboardStats() {
-  const [totalProducts, totalWarehouses, totalStock] = await Promise.all([
-    prisma.product.count(),
-    prisma.warehouse.count(),
-    prisma.warehouseProduct.aggregate({
-      _sum: {
-        stok: true,
-      },
-    }),
-  ])
+  try {
+    const [totalProducts, totalWarehouses, totalStock] = await Promise.all([
+      prisma.product.count(),
+      prisma.warehouse.count(),
+      prisma.warehouseProduct.aggregate({
+        _sum: {
+          stok: true,
+        },
+      }),
+    ])
 
-  return {
-    totalProducts,
-    totalWarehouses,
-    totalStock: totalStock._sum.stok || 0,
+    return {
+      totalProducts,
+      totalWarehouses,
+      totalStock: totalStock._sum.stok || 0,
+    }
+  } catch (error) {
+    console.error("Dashboard stats error:", error)
+    return {
+      totalProducts: 0,
+      totalWarehouses: 0,
+      totalStock: 0,
+    }
   }
 }
 
-export default async function Dashboard() {
+export default async function HomePage() {
   const stats = await getDashboardStats()
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">StokIn Lite</h1>
+        <h1 className="text-3xl font-bold">StokIn Lite</h1>
         <p className="text-muted-foreground">Sistem Manajemen Inventaris Multi-Gudang</p>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid gap-4 md:grid-cols-3 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Produk</CardTitle>
@@ -41,7 +50,7 @@ export default async function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalProducts}</div>
-            <p className="text-xs text-muted-foreground">Produk terdaftar dalam sistem</p>
+            <p className="text-xs text-muted-foreground">Produk terdaftar</p>
           </CardContent>
         </Card>
 
@@ -58,19 +67,19 @@ export default async function Dashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Item Tersimpan</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Stok</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalStock}</div>
-            <p className="text-xs text-muted-foreground">Item di semua gudang</p>
+            <p className="text-xs text-muted-foreground">Item tersimpan</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Navigation Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="hover:shadow-md transition-shadow">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Package className="h-5 w-5" />
@@ -79,13 +88,13 @@ export default async function Dashboard() {
             <CardDescription>Kelola data produk dan informasi barang</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full">
-              <Link href="/products">Lihat Produk</Link>
-            </Button>
+            <Link href="/products">
+              <Button className="w-full">Lihat Produk</Button>
+            </Link>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Warehouse className="h-5 w-5" />
@@ -94,13 +103,13 @@ export default async function Dashboard() {
             <CardDescription>Kelola data gudang dan lokasi penyimpanan</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full">
-              <Link href="/warehouses">Lihat Gudang</Link>
-            </Button>
+            <Link href="/warehouses">
+              <Button className="w-full">Lihat Gudang</Button>
+            </Link>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
@@ -109,13 +118,13 @@ export default async function Dashboard() {
             <CardDescription>Kelola stok barang di setiap gudang</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full">
-              <Link href="/inventory">Lihat Inventaris</Link>
-            </Button>
+            <Link href="/inventory">
+              <Button className="w-full">Lihat Inventaris</Button>
+            </Link>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <History className="h-5 w-5" />
@@ -124,9 +133,9 @@ export default async function Dashboard() {
             <CardDescription>Lihat riwayat transaksi dan pergerakan stok</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full">
-              <Link href="/history">Lihat Riwayat</Link>
-            </Button>
+            <Link href="/history">
+              <Button className="w-full">Lihat Riwayat</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>

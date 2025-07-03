@@ -1,14 +1,37 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const warehouse = await prisma.warehouse.findUnique({
+      where: { id: Number.parseInt(params.id) },
+      include: {
+        warehouseProducts: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    })
+
+    if (!warehouse) {
+      return NextResponse.json({ message: "Gudang tidak ditemukan" }, { status: 404 })
+    }
+
+    return NextResponse.json(warehouse)
+  } catch (error) {
+    console.error("Get warehouse error:", error)
+    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
+  }
+}
+
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const body = await request.json()
     const { name, location } = body
-    const warehouseId = Number.parseInt(params.id)
 
     const warehouse = await prisma.warehouse.update({
-      where: { id: warehouseId },
+      where: { id: Number.parseInt(params.id) },
       data: {
         name,
         location,
@@ -17,20 +40,20 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     return NextResponse.json(warehouse)
   } catch (error) {
-    return NextResponse.json({ message: "Terjadi kesalahan saat memperbarui gudang" }, { status: 500 })
+    console.error("Update warehouse error:", error)
+    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
   }
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const warehouseId = Number.parseInt(params.id)
-
     await prisma.warehouse.delete({
-      where: { id: warehouseId },
+      where: { id: Number.parseInt(params.id) },
     })
 
     return NextResponse.json({ message: "Gudang berhasil dihapus" })
   } catch (error) {
-    return NextResponse.json({ message: "Terjadi kesalahan saat menghapus gudang" }, { status: 500 })
+    console.error("Delete warehouse error:", error)
+    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
   }
 }
