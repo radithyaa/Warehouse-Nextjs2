@@ -21,8 +21,10 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className={inter.className}>
-        <Navbar />
-        <main className="min-h-screen bg-background">{children}</main>
+        <div className="min-h-screen bg-gray-50">
+          <Navbar />
+          <main>{children}</main>
+        </div>
         <Toaster />
       </body>
     </html>

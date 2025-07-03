@@ -5,11 +5,18 @@ export async function GET() {
   try {
     const warehouses = await prisma.warehouse.findMany({
       orderBy: { createdAt: "desc" },
+      include: {
+        warehouseProducts: {
+          include: {
+            product: true,
+          },
+        },
+      },
     })
     return NextResponse.json(warehouses)
   } catch (error) {
     console.error("Get warehouses error:", error)
-    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to fetch warehouses" }, { status: 500 })
   }
 }
 
@@ -18,9 +25,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, location } = body
 
-    // Validate required fields
     if (!name || !location) {
-      return NextResponse.json({ message: "Nama dan lokasi gudang wajib diisi" }, { status: 400 })
+      return NextResponse.json({ error: "Name and location are required" }, { status: 400 })
     }
 
     const warehouse = await prisma.warehouse.create({
@@ -33,6 +39,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(warehouse)
   } catch (error) {
     console.error("Create warehouse error:", error)
-    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to create warehouse" }, { status: 500 })
   }
 }

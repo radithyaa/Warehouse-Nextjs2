@@ -15,13 +15,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     })
 
     if (!product) {
-      return NextResponse.json({ message: "Produk tidak ditemukan" }, { status: 404 })
+      return NextResponse.json({ error: "Product not found" }, { status: 404 })
     }
 
     return NextResponse.json(product)
   } catch (error) {
     console.error("Get product error:", error)
-    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to fetch product" }, { status: 500 })
   }
 }
 
@@ -30,23 +30,28 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const body = await request.json()
     const { name, code, unit, category } = body
 
+    if (!name || !code) {
+      return NextResponse.json({ error: "Name and code are required" }, { status: 400 })
+    }
+
     const product = await prisma.product.update({
       where: { id: Number.parseInt(params.id) },
       data: {
         name,
         code,
-        unit,
-        category,
+        unit: unit || null,
+        category: category || null,
+        updatedAt: new Date(),
       },
     })
 
     return NextResponse.json(product)
-  } catch (error: any) {
+  } catch (error) {
     console.error("Update product error:", error)
-    if (error.code === "P2002") {
-      return NextResponse.json({ message: "Kode produk sudah digunakan" }, { status: 400 })
+    if (error instanceof Error && error.message.includes("Unique constraint")) {
+      return NextResponse.json({ error: "Kode produk sudah digunakan" }, { status: 400 })
     }
-    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to update product" }, { status: 500 })
   }
 }
 
@@ -56,9 +61,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       where: { id: Number.parseInt(params.id) },
     })
 
-    return NextResponse.json({ message: "Produk berhasil dihapus" })
+    return NextResponse.json({ message: "Product deleted successfully" })
   } catch (error) {
     console.error("Delete product error:", error)
-    return NextResponse.json({ message: "Terjadi kesalahan" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to delete product" }, { status: 500 })
   }
 }

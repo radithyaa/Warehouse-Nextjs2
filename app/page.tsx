@@ -35,10 +35,10 @@ export default async function HomePage() {
   const stats = await getDashboardStats()
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">StokIn Lite</h1>
-        <p className="text-muted-foreground">Sistem Manajemen Inventaris Multi-Gudang</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard StokIn Lite</h1>
+        <p className="text-gray-600">Sistem Manajemen Inventaris Multi-Gudang</p>
       </div>
 
       {/* Statistics Cards */}
@@ -50,7 +50,7 @@ export default async function HomePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalProducts}</div>
-            <p className="text-xs text-muted-foreground">Produk terdaftar</p>
+            <p className="text-xs text-muted-foreground">Produk terdaftar dalam sistem</p>
           </CardContent>
         </Card>
 
@@ -61,7 +61,7 @@ export default async function HomePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalWarehouses}</div>
-            <p className="text-xs text-muted-foreground">Gudang aktif</p>
+            <p className="text-xs text-muted-foreground">Gudang aktif dalam sistem</p>
           </CardContent>
         </Card>
 
@@ -71,8 +71,8 @@ export default async function HomePage() {
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalStock}</div>
-            <p className="text-xs text-muted-foreground">Item tersimpan</p>
+            <div className="text-2xl font-bold">{stats.totalStock.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Item tersimpan di semua gudang</p>
           </CardContent>
         </Card>
       </div>
@@ -83,9 +83,9 @@ export default async function HomePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Package className="h-5 w-5" />
-              Produk
+              Kelola Produk
             </CardTitle>
-            <CardDescription>Kelola data produk dan informasi barang</CardDescription>
+            <CardDescription>Tambah, edit, dan hapus produk dalam sistem</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/products">
@@ -98,9 +98,9 @@ export default async function HomePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Warehouse className="h-5 w-5" />
-              Gudang
+              Kelola Gudang
             </CardTitle>
-            <CardDescription>Kelola data gudang dan lokasi penyimpanan</CardDescription>
+            <CardDescription>Tambah, edit, dan hapus gudang dalam sistem</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/warehouses">
@@ -113,9 +113,9 @@ export default async function HomePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
-              Inventaris
+              Kelola Inventaris
             </CardTitle>
-            <CardDescription>Kelola stok barang di setiap gudang</CardDescription>
+            <CardDescription>Kelola stok produk di setiap gudang</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/inventory">
@@ -128,9 +128,9 @@ export default async function HomePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <History className="h-5 w-5" />
-              Riwayat
+              Riwayat Transaksi
             </CardTitle>
-            <CardDescription>Lihat riwayat transaksi dan pergerakan stok</CardDescription>
+            <CardDescription>Lihat riwayat semua transaksi stok</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/history">

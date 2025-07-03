@@ -8,11 +8,11 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!productId || !sourceWarehouseId || !targetWarehouseId || !quantity) {
-      return NextResponse.json({ message: "Missing required fields" }, { status: 400 })
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
     if (sourceWarehouseId === targetWarehouseId) {
-      return NextResponse.json({ message: "Gudang asal dan tujuan tidak boleh sama" }, { status: 400 })
+      return NextResponse.json({ error: "Gudang asal dan tujuan tidak boleh sama" }, { status: 400 })
     }
 
     // Start transaction
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         throw new Error("Stok di gudang asal tidak mencukupi")
       }
 
-      // Reduce stock in source warehouse
+      // Reduce stock from source warehouse
       await tx.warehouseProduct.update({
         where: {
           warehouseId_productId: {
@@ -41,10 +41,11 @@ export async function POST(request: NextRequest) {
         },
         data: {
           stok: sourceStock.stok - Number.parseInt(quantity),
+          updatedAt: new Date(),
         },
       })
 
-      // Get or create stock in target warehouse
+      // Get or create target warehouse product
       const targetStock = await tx.warehouseProduct.findUnique({
         where: {
           warehouseId_productId: {
@@ -54,55 +55,47 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      if (targetStock) {
-        // Update existing stock
-        await tx.warehouseProduct.update({
-          where: {
-            warehouseId_productId: {
-              warehouseId: Number.parseInt(targetWarehouseId),
-              productId: Number.parseInt(productId),
-            },
-          },
-          data: {
-            stok: targetStock.stok + Number.parseInt(quantity),
-          },
-        })
-      } else {
-        // Create new stock entry
-        await tx.warehouseProduct.create({
-          data: {
+      await tx.warehouseProduct.upsert({
+        where: {
+          warehouseId_productId: {
             warehouseId: Number.parseInt(targetWarehouseId),
             productId: Number.parseInt(productId),
-            stok: Number.parseInt(quantity),
-            hargaBeli: sourceStock.hargaBeli,
-            hargaJual: sourceStock.hargaJual,
           },
-        })
-      }
+        },
+        update: {
+          stok: (targetStock?.stok || 0) + Number.parseInt(quantity),
+          updatedAt: new Date(),
+        },
+        create: {
+          warehouseId: Number.parseInt(targetWarehouseId),
+          productId: Number.parseInt(productId),
+          stok: Number.parseInt(quantity),
+          hargaBeli: sourceStock.hargaBeli,
+          hargaJual: sourceStock.hargaJual,
+        },
+      })
 
       // Create transaction record
-      await tx.transaction.create({
+      const transaction = await tx.transaction.create({
         data: {
           productId: Number.parseInt(productId),
           warehouseId: Number.parseInt(sourceWarehouseId),
           type: "TRANSFER",
           quantity: Number.parseInt(quantity),
-          note,
+          note: note || null,
           sourceWarehouseId: Number.parseInt(sourceWarehouseId),
           targetWarehouseId: Number.parseInt(targetWarehouseId),
         },
       })
 
-      return { success: true }
+      return transaction
     })
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error("Transfer operation error:", error)
+    console.error("Transfer error:", error)
     return NextResponse.json(
-      {
-        message: error instanceof Error ? error.message : "Terjadi kesalahan",
-      },
+      { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 },
     )
   }

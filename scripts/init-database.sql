@@ -38,15 +38,15 @@ CREATE TABLE IF NOT EXISTS transactions (
   type VARCHAR(10) CHECK (type IN ('IN', 'OUT', 'TRANSFER')),
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   note TEXT,
-  source_warehouse_id INTEGER REFERENCES warehouses(id),
-  target_warehouse_id INTEGER REFERENCES warehouses(id),
+  source_warehouse_id INTEGER,
+  target_warehouse_id INTEGER,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_warehouse_products_warehouse ON warehouse_products(warehouse_id);
-CREATE INDEX IF NOT EXISTS idx_warehouse_products_product ON warehouse_products(product_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_product ON transactions(product_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_warehouse ON transactions(warehouse_id);
+CREATE INDEX IF NOT EXISTS idx_warehouse_products_warehouse_id ON warehouse_products(warehouse_id);
+CREATE INDEX IF NOT EXISTS idx_warehouse_products_product_id ON warehouse_products(product_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_product_id ON transactions(product_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_warehouse_id ON transactions(warehouse_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
 CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at);

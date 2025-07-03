@@ -2,8 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
@@ -11,12 +10,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 
 interface Product {
   id: number
@@ -27,21 +25,37 @@ interface Product {
 }
 
 interface ProductDialogProps {
-  children: React.ReactNode
-  product?: Product
+  open: boolean
+  onClose: () => void
+  product?: Product | null
 }
 
-export function ProductDialog({ children, product }: ProductDialogProps) {
-  const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
-
+export function ProductDialog({ open, onClose, product }: ProductDialogProps) {
   const [formData, setFormData] = useState({
-    name: product?.name || "",
-    code: product?.code || "",
-    unit: product?.unit || "",
-    category: product?.category || "",
+    name: "",
+    code: "",
+    unit: "",
+    category: "",
   })
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        name: product.name,
+        code: product.code,
+        unit: product.unit || "",
+        category: product.category || "",
+      })
+    } else {
+      setFormData({
+        name: "",
+        code: "",
+        unit: "",
+        category: "",
+      })
+    }
+  }, [product, open])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -59,76 +73,83 @@ export function ProductDialog({ children, product }: ProductDialogProps) {
         body: JSON.stringify(formData),
       })
 
-      if (!response.ok) {
+      if (response.ok) {
+        toast.success(product ? "Produk berhasil diperbarui" : "Produk berhasil ditambahkan")
+        onClose()
+      } else {
         const error = await response.json()
-        throw new Error(error.message || "Terjadi kesalahan")
-      }
-
-      toast.success(product ? "Produk berhasil diperbarui" : "Produk berhasil ditambahkan")
-      setOpen(false)
-      router.refresh()
-
-      if (!product) {
-        setFormData({ name: "", code: "", unit: "", category: "" })
+        toast.error(error.error || "Terjadi kesalahan")
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Terjadi kesalahan")
+      console.error("Error saving product:", error)
+      toast.error("Terjadi kesalahan saat menyimpan produk")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{product ? "Edit Produk" : "Tambah Produk Baru"}</DialogTitle>
           <DialogDescription>
-            {product ? "Perbarui informasi produk di bawah ini." : "Masukkan informasi produk baru di bawah ini."}
+            {product ? "Perbarui informasi produk" : "Masukkan informasi produk baru"}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Nama Produk *</Label>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Nama Produk *
+              </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="col-span-3"
                 required
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="code">Kode Produk *</Label>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="code" className="text-right">
+                Kode Produk *
+              </Label>
               <Input
                 id="code"
                 value={formData.code}
                 onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                className="col-span-3"
                 required
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="unit">Unit</Label>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="unit" className="text-right">
+                Unit
+              </Label>
               <Input
                 id="unit"
                 value={formData.unit}
                 onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                className="col-span-3"
                 placeholder="pcs, kg, liter, dll"
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="category">Kategori</Label>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="category" className="text-right">
+                Kategori
+              </Label>
               <Input
                 id="category"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                placeholder="Elektronik, Makanan, dll"
+                className="col-span-3"
+                placeholder="Elektronik, Furniture, dll"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={onClose}>
               Batal
             </Button>
             <Button type="submit" disabled={loading}>
