@@ -2,11 +2,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 interface TableSkeletonProps {
-  columns: number
   rows?: number
+  columns?: number
 }
 
-export function TableSkeleton({ columns, rows = 5 }: TableSkeletonProps) {
+export function TableSkeleton({ rows = 5, columns = 4 }: TableSkeletonProps) {
   return (
     <div className="rounded-md border">
       <Table>

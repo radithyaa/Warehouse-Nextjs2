@@ -11,7 +11,7 @@ interface ClientLayoutProps {
   children: React.ReactNode
 }
 
-export default function ClientLayout({ children }: ClientLayoutProps) {
+const ClientLayout = ({ children }: ClientLayoutProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   return (
@@ -35,3 +35,5 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     </ThemeProvider>
   )
 }
+
+export default ClientLayout

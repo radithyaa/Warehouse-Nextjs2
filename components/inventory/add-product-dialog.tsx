@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -20,59 +20,71 @@ import { Plus } from "lucide-react"
 import { toast } from "sonner"
 
 interface Product {
-  id: number
+  id: string
   name: string
-  code: string
-  unit: string | null
+  sku: string
 }
 
 interface AddProductDialogProps {
-  warehouseId: number
-  availableProducts: Product[]
+  warehouseId: string
   onSuccess: () => void
 }
 
-export function AddProductDialog({ warehouseId, availableProducts, onSuccess }: AddProductDialogProps) {
+export function AddProductDialog({ warehouseId, onSuccess }: AddProductDialogProps) {
   const [open, setOpen] = useState(false)
-  const [selectedProductId, setSelectedProductId] = useState<string>("")
-  const [stok, setStok] = useState("")
-  const [hargaBeli, setHargaBeli] = useState("")
-  const [hargaJual, setHargaJual] = useState("")
   const [loading, setLoading] = useState(false)
+  const [products, setProducts] = useState<Product[]>([])
+  const [selectedProduct, setSelectedProduct] = useState("")
+  const [quantity, setQuantity] = useState("")
+  const [buyPrice, setBuyPrice] = useState("")
+  const [sellPrice, setSellPrice] = useState("")
+
+  useEffect(() => {
+    if (open) {
+      fetchAvailableProducts()
+    }
+  }, [open, warehouseId])
+
+  const fetchAvailableProducts = async () => {
+    try {
+      const response = await fetch(`/api/products/available?warehouseId=${warehouseId}`)
+      if (response.ok) {
+        const data = await response.json()
+        setProducts(data)
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error)
+      toast.error("Gagal memuat daftar produk")
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!selectedProductId || !stok) {
-      toast.error("Produk dan stok harus diisi")
+    if (!selectedProduct || !quantity) {
+      toast.error("Mohon lengkapi semua field yang wajib")
       return
     }
 
     setLoading(true)
     try {
-      const response = await fetch("/api/inventory/stock", {
+      const response = await fetch("/api/inventory/add-product", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          productId: Number.parseInt(selectedProductId),
           warehouseId,
-          quantity: Number.parseInt(stok),
-          type: "IN",
-          hargaBeli: hargaBeli ? Number.parseFloat(hargaBeli) : null,
-          hargaJual: hargaJual ? Number.parseFloat(hargaJual) : null,
-          keterangan: "Penambahan produk baru ke gudang",
+          productId: selectedProduct,
+          quantity: Number.parseInt(quantity),
+          buyPrice: buyPrice ? Number.parseFloat(buyPrice) : null,
+          sellPrice: sellPrice ? Number.parseFloat(sellPrice) : null,
         }),
       })
 
       if (response.ok) {
         toast.success("Produk berhasil ditambahkan ke gudang")
         setOpen(false)
-        setSelectedProductId("")
-        setStok("")
-        setHargaBeli("")
-        setHargaJual("")
+        resetForm()
         onSuccess()
       } else {
         const error = await response.json()
@@ -84,6 +96,13 @@ export function AddProductDialog({ warehouseId, availableProducts, onSuccess }: 
     } finally {
       setLoading(false)
     }
+  }
+
+  const resetForm = () => {
+    setSelectedProduct("")
+    setQuantity("")
+    setBuyPrice("")
+    setSellPrice("")
   }
 
   return (
@@ -103,15 +122,15 @@ export function AddProductDialog({ warehouseId, availableProducts, onSuccess }: 
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="product">Produk</Label>
-            <Select value={selectedProductId} onValueChange={setSelectedProductId}>
+            <Label htmlFor="product">Produk *</Label>
+            <Select value={selectedProduct} onValueChange={setSelectedProduct}>
               <SelectTrigger>
                 <SelectValue placeholder="Pilih produk..." />
               </SelectTrigger>
               <SelectContent>
-                {availableProducts.map((product) => (
-                  <SelectItem key={product.id} value={product.id.toString()}>
-                    {product.name} ({product.code})
+                {products.map((product) => (
+                  <SelectItem key={product.id} value={product.id}>
+                    {product.name} ({product.sku})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -119,46 +138,45 @@ export function AddProductDialog({ warehouseId, availableProducts, onSuccess }: 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="stok">Stok Awal</Label>
+            <Label htmlFor="quantity">Stok Awal *</Label>
             <Input
-              id="stok"
+              id="quantity"
               type="number"
-              min="1"
-              value={stok}
-              onChange={(e) => setStok(e.target.value)}
-              placeholder="Masukkan jumlah stok..."
-              required
+              min="0"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              placeholder="Masukkan jumlah stok awal"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hargaBeli">Harga Beli (Opsional)</Label>
+            <Label htmlFor="buyPrice">Harga Beli (Opsional)</Label>
             <Input
-              id="hargaBeli"
+              id="buyPrice"
               type="number"
               min="0"
               step="0.01"
-              value={hargaBeli}
-              onChange={(e) => setHargaBeli(e.target.value)}
-              placeholder="Masukkan harga beli..."
+              value={buyPrice}
+              onChange={(e) => setBuyPrice(e.target.value)}
+              placeholder="Masukkan harga beli"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hargaJual">Harga Jual (Opsional)</Label>
+            <Label htmlFor="sellPrice">Harga Jual (Opsional)</Label>
             <Input
-              id="hargaJual"
+              id="sellPrice"
               type="number"
               min="0"
               step="0.01"
-              value={hargaJual}
-              onChange={(e) => setHargaJual(e.target.value)}
-              placeholder="Masukkan harga jual..."
+              value={sellPrice}
+              onChange={(e) => setSellPrice(e.target.value)}
+              placeholder="Masukkan harga jual"
             />
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               Batal
             </Button>
             <Button type="submit" disabled={loading}>
