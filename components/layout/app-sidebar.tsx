@@ -3,8 +3,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Home, Box, Warehouse, ClipboardList, History, ChevronLeft, ChevronRight, Sun, Moon } from "lucide-react"
 import { useTheme } from "next-themes"
+import { Home, Package, Warehouse, ClipboardList, History, ChevronLeft, ChevronRight, Moon, Sun } from "lucide-react"
 
 interface AppSidebarProps {
   isCollapsed: boolean
@@ -12,11 +12,31 @@ interface AppSidebarProps {
 }
 
 const navigationItems = [
-  { href: "/", label: "Beranda", icon: Home },
-  { href: "/products", label: "Produk", icon: Box },
-  { href: "/warehouses", label: "Gudang", icon: Warehouse },
-  { href: "/inventory", label: "Inventaris", icon: ClipboardList },
-  { href: "/history", label: "Riwayat", icon: History },
+  {
+    title: "Beranda",
+    href: "/",
+    icon: Home,
+  },
+  {
+    title: "Produk",
+    href: "/products",
+    icon: Package,
+  },
+  {
+    title: "Gudang",
+    href: "/warehouses",
+    icon: Warehouse,
+  },
+  {
+    title: "Inventaris",
+    href: "/inventory",
+    icon: ClipboardList,
+  },
+  {
+    title: "Riwayat",
+    href: "/history",
+    icon: History,
+  },
 ]
 
 export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
@@ -30,16 +50,14 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
   return (
     <TooltipProvider>
       <div
-        className={`
-        bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 
-        transition-all duration-300 flex flex-col h-full
-        ${isCollapsed ? "w-16" : "w-60"}
-      `}
+        className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+          isCollapsed ? "w-16" : "w-60"
+        } flex flex-col h-full`}
       >
         {/* Header */}
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            {!isCollapsed && <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">StokIn Lite</h1>}
+            {!isCollapsed && <h1 className="text-xl font-bold text-gray-900 dark:text-white">StokIn Lite</h1>}
             <Button variant="ghost" size="icon" onClick={onToggle} className="h-8 w-8">
               {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
@@ -54,17 +72,13 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
 
             const buttonContent = (
               <Button
-                asChild
                 variant={isActive ? "default" : "ghost"}
-                className={`
-                  w-full justify-start h-10
-                  ${isCollapsed ? "px-2" : "px-3"}
-                  ${isActive ? "bg-blue-600 text-white hover:bg-blue-700" : ""}
-                `}
+                className={`w-full justify-start ${isCollapsed ? "px-2" : ""}`}
+                asChild
               >
                 <Link href={item.href}>
-                  <Icon className={`h-4 w-4 ${isCollapsed ? "" : "mr-3"}`} />
-                  {!isCollapsed && <span>{item.label}</span>}
+                  <Icon className={`h-4 w-4 ${isCollapsed ? "" : "mr-2"}`} />
+                  {!isCollapsed && <span>{item.title}</span>}
                 </Link>
               </Button>
             )
@@ -74,7 +88,7 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
                 <Tooltip key={item.href}>
                   <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
                   <TooltipContent side="right">
-                    <p>{item.label}</p>
+                    <p>{item.title}</p>
                   </TooltipContent>
                 </Tooltip>
               )
@@ -89,7 +103,7 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
           {isCollapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={toggleTheme} className="w-full h-10">
+                <Button variant="ghost" size="icon" onClick={toggleTheme} className="w-full">
                   {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 </Button>
               </TooltipTrigger>
@@ -98,16 +112,16 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
               </TooltipContent>
             </Tooltip>
           ) : (
-            <Button variant="ghost" onClick={toggleTheme} className="w-full justify-start h-10">
+            <Button variant="ghost" onClick={toggleTheme} className="w-full justify-start">
               {theme === "dark" ? (
                 <>
-                  <Sun className="h-4 w-4 mr-3" />
-                  <span>Mode Terang</span>
+                  <Sun className="h-4 w-4 mr-2" />
+                  Mode Terang
                 </>
               ) : (
                 <>
-                  <Moon className="h-4 w-4 mr-3" />
-                  <span>Mode Gelap</span>
+                  <Moon className="h-4 w-4 mr-2" />
+                  Mode Gelap
                 </>
               )}
             </Button>

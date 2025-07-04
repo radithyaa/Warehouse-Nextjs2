@@ -5,15 +5,35 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Home, Box, Warehouse, ClipboardList, History, Sun, Moon } from "lucide-react"
 import { useTheme } from "next-themes"
+import { Menu, Home, Package, Warehouse, ClipboardList, History, Moon, Sun } from "lucide-react"
 
 const navigationItems = [
-  { href: "/", label: "Beranda", icon: Home },
-  { href: "/products", label: "Produk", icon: Box },
-  { href: "/warehouses", label: "Gudang", icon: Warehouse },
-  { href: "/inventory", label: "Inventaris", icon: ClipboardList },
-  { href: "/history", label: "Riwayat", icon: History },
+  {
+    title: "Beranda",
+    href: "/",
+    icon: Home,
+  },
+  {
+    title: "Produk",
+    href: "/products",
+    icon: Package,
+  },
+  {
+    title: "Gudang",
+    href: "/warehouses",
+    icon: Warehouse,
+  },
+  {
+    title: "Inventaris",
+    href: "/inventory",
+    icon: ClipboardList,
+  },
+  {
+    title: "Riwayat",
+    href: "/history",
+    icon: History,
+  },
 ]
 
 export function MobileHeader() {
@@ -35,12 +55,9 @@ export function MobileHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="bottom" className="h-[400px]">
-            <div className="flex flex-col h-full">
-              <div className="text-center py-4">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Navigasi</h2>
-              </div>
-
-              <nav className="flex-1 space-y-2 px-4">
+            <div className="py-6">
+              <h2 className="text-lg font-semibold text-center mb-6">Navigasi</h2>
+              <nav className="space-y-4">
                 {navigationItems.map((item) => {
                   const isActive = pathname === item.href
                   const Icon = item.icon
@@ -48,34 +65,32 @@ export function MobileHeader() {
                   return (
                     <Button
                       key={item.href}
-                      asChild
                       variant={isActive ? "default" : "ghost"}
-                      className={`
-                        w-full justify-center h-12 text-base
-                        ${isActive ? "bg-blue-600 text-white hover:bg-blue-700" : ""}
-                      `}
+                      className="w-full justify-center"
+                      asChild
                       onClick={() => setOpen(false)}
                     >
                       <Link href={item.href}>
-                        <Icon className="h-5 w-5 mr-3" />
-                        <span>{item.label}</span>
+                        <Icon className="h-4 w-4 mr-2" />
+                        {item.title}
                       </Link>
                     </Button>
                   )
                 })}
               </nav>
 
-              <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                <Button variant="ghost" onClick={toggleTheme} className="w-full justify-center h-12 text-base">
+              {/* Theme Toggle */}
+              <div className="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <Button variant="ghost" onClick={toggleTheme} className="w-full justify-center">
                   {theme === "dark" ? (
                     <>
-                      <Sun className="h-5 w-5 mr-3" />
-                      <span>Mode Terang</span>
+                      <Sun className="h-4 w-4 mr-2" />
+                      Mode Terang
                     </>
                   ) : (
                     <>
-                      <Moon className="h-5 w-5 mr-3" />
-                      <span>Mode Gelap</span>
+                      <Moon className="h-4 w-4 mr-2" />
+                      Mode Gelap
                     </>
                   )}
                 </Button>
@@ -83,7 +98,7 @@ export function MobileHeader() {
             </div>
           </SheetContent>
         </Sheet>
-        <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">StokIn Lite</h1>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-white">StokIn Lite</h1>
         <div className="w-10" /> {/* Spacer for centering */}
       </div>
     </header>

@@ -13,9 +13,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus } from "lucide-react"
 import { toast } from "sonner"
 
@@ -54,14 +54,14 @@ export function AddProductDialog({ warehouseId, onSuccess }: AddProductDialogPro
       }
     } catch (error) {
       console.error("Error fetching products:", error)
-      toast.error("Gagal memuat daftar produk")
+      toast.error("Gagal memuat produk")
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedProduct || !quantity) {
-      toast.error("Mohon lengkapi semua field yang wajib")
+      toast.error("Harap isi semua field yang wajib")
       return
     }
 
@@ -92,7 +92,7 @@ export function AddProductDialog({ warehouseId, onSuccess }: AddProductDialogPro
       }
     } catch (error) {
       console.error("Error adding product:", error)
-      toast.error("Terjadi kesalahan saat menambahkan produk")
+      toast.error("Terjadi kesalahan")
     } finally {
       setLoading(false)
     }
@@ -109,7 +109,7 @@ export function AddProductDialog({ warehouseId, onSuccess }: AddProductDialogPro
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4 mr-2" />
           Tambah Produk ke Gudang Ini
         </Button>
       </DialogTrigger>
@@ -120,63 +120,61 @@ export function AddProductDialog({ warehouseId, onSuccess }: AddProductDialogPro
             Pilih produk yang ingin ditambahkan ke gudang ini dan tentukan stok awal.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="product">Produk *</Label>
-            <Select value={selectedProduct} onValueChange={setSelectedProduct}>
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih produk..." />
-              </SelectTrigger>
-              <SelectContent>
-                {products.map((product) => (
-                  <SelectItem key={product.id} value={product.id}>
-                    {product.name} ({product.sku})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="product">Produk *</Label>
+              <Select value={selectedProduct} onValueChange={setSelectedProduct}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih produk" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((product) => (
+                    <SelectItem key={product.id} value={product.id}>
+                      {product.name} ({product.sku})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="quantity">Stok Awal *</Label>
+              <Input
+                id="quantity"
+                type="number"
+                min="0"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                placeholder="Masukkan jumlah stok"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="buyPrice">Harga Beli (Opsional)</Label>
+              <Input
+                id="buyPrice"
+                type="number"
+                min="0"
+                step="0.01"
+                value={buyPrice}
+                onChange={(e) => setBuyPrice(e.target.value)}
+                placeholder="Masukkan harga beli"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="sellPrice">Harga Jual (Opsional)</Label>
+              <Input
+                id="sellPrice"
+                type="number"
+                min="0"
+                step="0.01"
+                value={sellPrice}
+                onChange={(e) => setSellPrice(e.target.value)}
+                placeholder="Masukkan harga jual"
+              />
+            </div>
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="quantity">Stok Awal *</Label>
-            <Input
-              id="quantity"
-              type="number"
-              min="0"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              placeholder="Masukkan jumlah stok awal"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="buyPrice">Harga Beli (Opsional)</Label>
-            <Input
-              id="buyPrice"
-              type="number"
-              min="0"
-              step="0.01"
-              value={buyPrice}
-              onChange={(e) => setBuyPrice(e.target.value)}
-              placeholder="Masukkan harga beli"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="sellPrice">Harga Jual (Opsional)</Label>
-            <Input
-              id="sellPrice"
-              type="number"
-              min="0"
-              step="0.01"
-              value={sellPrice}
-              onChange={(e) => setSellPrice(e.target.value)}
-              placeholder="Masukkan harga jual"
-            />
-          </div>
-
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Batal
             </Button>
             <Button type="submit" disabled={loading}>

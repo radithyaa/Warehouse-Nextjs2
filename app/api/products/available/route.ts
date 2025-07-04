@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: "Warehouse ID is required" }, { status: 400 })
     }
 
-    // Get products that are not yet in the specified warehouse
+    // Get products that are not yet in this warehouse
     const availableProducts = await prisma.product.findMany({
       where: {
         NOT: {

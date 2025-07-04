@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const { warehouseId, productId, quantity, buyPrice, sellPrice } = body
 
     if (!warehouseId || !productId || quantity === undefined) {
-      return NextResponse.json({ message: "Missing required fields" }, { status: 400 })
+      return NextResponse.json({ message: "Warehouse ID, Product ID, and quantity are required" }, { status: 400 })
     }
 
     if (quantity < 0) {
@@ -28,28 +28,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "Product already exists in this warehouse" }, { status: 400 })
     }
 
-    // Use transaction to ensure data consistency
+    // Create warehouse product and transaction in a single transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Create warehouse product entry
+      // Create warehouse product
       const warehouseProduct = await tx.warehouseProduct.create({
         data: {
           warehouseId,
           productId,
           quantity,
-          buyPrice,
-          sellPrice,
+          buyPrice: buyPrice || null,
+          sellPrice: sellPrice || null,
         },
       })
 
-      // Record transaction if quantity > 0
+      // Create transaction record if quantity > 0
       if (quantity > 0) {
         await tx.transaction.create({
           data: {
-            warehouseId,
-            productId,
+            warehouseProductId: warehouseProduct.id,
             type: "IN",
             quantity,
-            description: "Initial stock",
+            description: "Stok awal produk",
           },
         })
       }
@@ -57,7 +56,7 @@ export async function POST(request: NextRequest) {
       return warehouseProduct
     })
 
-    return NextResponse.json(result)
+    return NextResponse.json(result, { status: 201 })
   } catch (error) {
     console.error("Error adding product to warehouse:", error)
     return NextResponse.json({ message: "Internal server error" }, { status: 500 })
