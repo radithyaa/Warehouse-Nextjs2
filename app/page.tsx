@@ -115,7 +115,7 @@ export default async function HomePage() {
               <BarChart3 className="h-5 w-5" />
               Kelola Inventaris
             </CardTitle>
-            <CardDescription>Kelola stok produk di setiap gudang</CardDescription>
+            <CardDescription>Kelola stok produk di setiap gudang di cabang</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/inventory">
@@ -130,7 +130,7 @@ export default async function HomePage() {
               <History className="h-5 w-5" />
               Riwayat Transaksi
             </CardTitle>
-            <CardDescription>Lihat riwayat semua transaksi stok</CardDescription>
+            <CardDescription>Lihat riwayat semua transaksi stok yang terjadi</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/history">
