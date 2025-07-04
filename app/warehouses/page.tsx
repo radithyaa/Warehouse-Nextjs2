@@ -20,22 +20,21 @@ export default async function WarehousesPage() {
   return (
     <div className="container mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gudang</h1>
-          <p className="text-muted-foreground">Kelola data gudang dan lokasi penyimpanan</p>
-        </div>
-        <WarehouseDialog>
+        
+      </div>
+
+      <Card>
+        <CardHeader className="flex justify-between flex-row w-full">
+          <div>
+          <CardTitle>Daftar Gudang</CardTitle>
+          <CardDescription>Total {warehouses.length} gudang terdaftar</CardDescription>
+          </div>
+          <WarehouseDialog>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Tambah Gudang
           </Button>
         </WarehouseDialog>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Daftar Gudang</CardTitle>
-          <CardDescription>Total {warehouses.length} gudang terdaftar</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
@@ -68,12 +67,12 @@ export default async function WarehousesPage() {
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <WarehouseDialog warehouse={warehouse}>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="outline" size="icon">
                             <Pencil className="h-4 w-4" />
                           </Button>
                         </WarehouseDialog>
                         <DeleteWarehouseDialog warehouse={warehouse}>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="outline" size="icon">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </DeleteWarehouseDialog>

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTheme } from "next-themes"
-import { Home, Package, Warehouse, ClipboardList, History, ChevronLeft, ChevronRight, Moon, Sun, LogOut } from "lucide-react"
+import { Home, Package, Warehouse, ClipboardList, History, ChevronLeft, ChevronRight, Moon, Sun, LogOut, Menu } from "lucide-react"
 
 interface AppSidebarProps {
   isCollapsed: boolean
@@ -57,9 +57,9 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
         {/* Header */}
         <div className="py-4 px-2 border-b border-gray-200 dark:border-gray-700">
           <div className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
-            {!isCollapsed && <h1 className="text-xl font-bold text-gray-900 dark:text-white">StokIn Lite</h1>}
-            <Button variant="ghost" size="icon" onClick={onToggle} className="h-8 w-8">
-              {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            {!isCollapsed && <h1 className="text-xl pl-4 font-bold text-primary dark:text-primary">Warehouses</h1>}
+            <Button variant="ghost" size="icon" onClick={onToggle} className="h-8 w-8 text-primary hover:text-primary">
+              {isCollapsed ? <Menu className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4 text-primary hover:text-primary" />}
             </Button>
           </div>
         </div>
@@ -99,7 +99,7 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
         </nav>
 
         {/* Theme Toggle */}
-        <div className="p-4 pb-0 border-t border-gray-200 dark:border-gray-700">
+        <div className="pt-2 px-2 pb-0 border-t border-gray-200 dark:border-gray-700">
           {isCollapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -126,7 +126,7 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
             </Button>
           )}
         </div>
-        <div className="p-4 pb-2 pt-2 border-gray-200 dark:border-gray-700">
+        <div className="px-2 pb-2 pt-0 border-gray-200 dark:border-gray-700">
           {isCollapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
