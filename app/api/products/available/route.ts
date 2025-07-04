@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         NOT: {
           warehouseProducts: {
             some: {
-              warehouseId: warehouseId,
+              warehouseId: Number.parseInt(warehouseId),
             },
           },
         },
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         name: true,
-        sku: true,
+        code: true,
       },
       orderBy: {
         name: "asc",

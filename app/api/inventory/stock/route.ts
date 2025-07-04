@@ -6,8 +6,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { productId, warehouseId, quantity, hargaBeli, hargaJual, type } = body
 
-    if (!productId || !warehouseId || !quantity || !type) {
+    if (!productId || !warehouseId || quantity === undefined || !type) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    const quantityNum = Number(quantity);
+    if (isNaN(quantityNum) || quantityNum <= 0) {
+      return NextResponse.json({ error: "Quantity must be a valid positive number" }, { status: 400 })
+    }
+
+    if (!['IN', 'OUT'].includes(type)) {
+      return NextResponse.json({ error: "Type must be 'IN' or 'OUT'" }, { status: 400 })
     }
 
     // Start transaction
@@ -24,9 +33,9 @@ export async function POST(request: NextRequest) {
 
       let newStock = 0
       if (type === "IN") {
-        newStock = (existingStock?.stok || 0) + Number.parseInt(quantity)
+        newStock = (existingStock?.stok || 0) + quantityNum
       } else if (type === "OUT") {
-        newStock = (existingStock?.stok || 0) - Number.parseInt(quantity)
+        newStock = (existingStock?.stok || 0) - quantityNum
         if (newStock < 0) {
           throw new Error("Stok tidak mencukupi")
         }
@@ -61,7 +70,7 @@ export async function POST(request: NextRequest) {
           productId: Number.parseInt(productId),
           warehouseId: Number.parseInt(warehouseId),
           type: type,
-          quantity: Number.parseInt(quantity),
+          quantity: quantityNum,
           note: body.note || null,
         },
       })

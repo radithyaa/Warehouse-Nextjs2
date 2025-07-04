@@ -11,6 +11,8 @@ import { DeleteProductDialog } from "@/components/products/delete-product-dialog
 import { toast } from "sonner"
 import Link from "next/link"
 
+export const dynamic = 'force-dynamic'
+
 interface Product {
   id: number
   name: string
@@ -150,7 +152,7 @@ export default function ProductsPage() {
                       <TableCell>
                         <Link
                           href={`/products/${product.id}`}
-                          className="font-medium text-primary"
+                          className="font-medium text-primary hover:underline"
                         >
                           {product.name}
                         </Link>

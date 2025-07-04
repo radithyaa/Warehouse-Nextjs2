@@ -4,6 +4,8 @@ import { Package, Warehouse, BarChart3, History } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 
+export const dynamic = 'force-dynamic'
+
 async function getDashboardStats() {
   try {
     const [totalProducts, totalWarehouses, totalStock] = await Promise.all([

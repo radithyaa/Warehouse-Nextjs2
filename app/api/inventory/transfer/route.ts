@@ -7,8 +7,13 @@ export async function POST(request: NextRequest) {
     const { productId, sourceWarehouseId, targetWarehouseId, quantity, note } = body
 
     // Validate required fields
-    if (!productId || !sourceWarehouseId || !targetWarehouseId || !quantity) {
+    if (!productId || !sourceWarehouseId || !targetWarehouseId || quantity === undefined) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    const quantityNum = Number(quantity);
+    if (isNaN(quantityNum) || quantityNum <= 0) {
+      return NextResponse.json({ error: "Quantity must be a valid positive number" }, { status: 400 })
     }
 
     if (sourceWarehouseId === targetWarehouseId) {
@@ -27,7 +32,7 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      if (!sourceStock || sourceStock.stok < Number.parseInt(quantity)) {
+      if (!sourceStock || sourceStock.stok < quantityNum) {
         throw new Error("Stok di gudang asal tidak mencukupi")
       }
 
@@ -40,7 +45,7 @@ export async function POST(request: NextRequest) {
           },
         },
         data: {
-          stok: sourceStock.stok - Number.parseInt(quantity),
+          stok: sourceStock.stok - quantityNum,
           updatedAt: new Date(),
         },
       })
@@ -63,13 +68,13 @@ export async function POST(request: NextRequest) {
           },
         },
         update: {
-          stok: (targetStock?.stok || 0) + Number.parseInt(quantity),
+          stok: (targetStock?.stok || 0) + quantityNum,
           updatedAt: new Date(),
         },
         create: {
           warehouseId: Number.parseInt(targetWarehouseId),
           productId: Number.parseInt(productId),
-          stok: Number.parseInt(quantity),
+          stok: quantityNum,
           hargaBeli: sourceStock.hargaBeli,
           hargaJual: sourceStock.hargaJual,
         },
@@ -81,7 +86,7 @@ export async function POST(request: NextRequest) {
           productId: Number.parseInt(productId),
           warehouseId: Number.parseInt(sourceWarehouseId),
           type: "TRANSFER",
-          quantity: Number.parseInt(quantity),
+          quantity: quantityNum,
           note: note || null,
           sourceWarehouseId: Number.parseInt(sourceWarehouseId),
           targetWarehouseId: Number.parseInt(targetWarehouseId),

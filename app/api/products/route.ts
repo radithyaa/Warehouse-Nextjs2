@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(product)
   } catch (error) {
     console.error("Create product error:", error)
-    if (error instanceof Error && error.message.includes("Unique constraint")) {
+    if (error instanceof Error && (error.message.includes("Unique constraint") || error.message.includes("unique constraint"))) {
       return NextResponse.json({ error: "Kode produk sudah digunakan" }, { status: 400 })
     }
     return NextResponse.json({ error: "Failed to create product" }, { status: 500 })

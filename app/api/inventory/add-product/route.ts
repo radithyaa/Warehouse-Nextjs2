@@ -4,22 +4,23 @@ import { prisma } from "@/lib/prisma"
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { warehouseId, productId, quantity, buyPrice, sellPrice } = body
+    const { warehouseId, productId, quantity, hargaBeli, hargaJual } = body
 
     if (!warehouseId || !productId || quantity === undefined) {
       return NextResponse.json({ message: "Warehouse ID, Product ID, and quantity are required" }, { status: 400 })
     }
 
-    if (quantity < 0) {
-      return NextResponse.json({ message: "Quantity cannot be negative" }, { status: 400 })
+    const quantityNum = Number(quantity);
+    if (isNaN(quantityNum) || quantityNum < 0) {
+      return NextResponse.json({ message: "Quantity must be a valid non-negative number" }, { status: 400 })
     }
 
     // Check if product already exists in warehouse
     const existingWarehouseProduct = await prisma.warehouseProduct.findUnique({
       where: {
         warehouseId_productId: {
-          warehouseId,
-          productId,
+          warehouseId: Number.parseInt(warehouseId),
+          productId: Number.parseInt(productId),
         },
       },
     })
@@ -33,22 +34,23 @@ export async function POST(request: NextRequest) {
       // Create warehouse product
       const warehouseProduct = await tx.warehouseProduct.create({
         data: {
-          warehouseId,
-          productId,
-          quantity,
-          buyPrice: buyPrice || null,
-          sellPrice: sellPrice || null,
+          warehouseId: Number.parseInt(warehouseId),
+          productId: Number.parseInt(productId),
+          stok: quantityNum,
+          hargaBeli: hargaBeli ? Number.parseInt(hargaBeli) : null,
+          hargaJual: hargaJual ? Number.parseInt(hargaJual) : null,
         },
       })
 
       // Create transaction record if quantity > 0
-      if (quantity > 0) {
+      if (quantityNum > 0) {
         await tx.transaction.create({
           data: {
-            warehouseProductId: warehouseProduct.id,
+            productId: Number.parseInt(productId),
+            warehouseId: Number.parseInt(warehouseId),
             type: "IN",
-            quantity,
-            description: "Stok awal produk",
+            quantity: quantityNum,
+            note: "Stok awal produk",
           },
         })
       }

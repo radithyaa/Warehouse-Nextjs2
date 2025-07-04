@@ -8,6 +8,8 @@ import { WarehouseDialog } from "@/components/warehouses/warehouse-dialog"
 import { DeleteWarehouseDialog } from "@/components/warehouses/delete-warehouse-dialog"
 import Link from "next/link"
 
+export const dynamic = 'force-dynamic'
+
 async function getWarehouses() {
   return await prisma.warehouse.findMany({
     orderBy: { createdAt: "desc" },
@@ -16,6 +18,7 @@ async function getWarehouses() {
 
 export default async function WarehousesPage() {
   const warehouses = await getWarehouses()
+  
 
   return (
     <div className="container mx-auto p-6">
@@ -59,7 +62,7 @@ export default async function WarehousesPage() {
                   <TableRow key={warehouse.id} className="cursor-pointer hover:bg-muted/50">
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell>
-                      <Link href={`/warehouses/${warehouse.id}`} className="hover:underline">
+                      <Link href={`/warehouses/${warehouse.id}`} className="hover:underline text-primary">
                         {warehouse.name}
                       </Link>
                     </TableCell>
