@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTheme } from "next-themes"
-import { Home, Package, Warehouse, ClipboardList, History, ChevronLeft, ChevronRight, Moon, Sun } from "lucide-react"
+import { Home, Package, Warehouse, ClipboardList, History, ChevronLeft, ChevronRight, Moon, Sun, LogOut } from "lucide-react"
 
 interface AppSidebarProps {
   isCollapsed: boolean
@@ -55,8 +55,8 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
         } flex flex-col h-full`}
       >
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
+        <div className="py-4 px-2 border-b border-gray-200 dark:border-gray-700">
+          <div className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
             {!isCollapsed && <h1 className="text-xl font-bold text-gray-900 dark:text-white">StokIn Lite</h1>}
             <Button variant="ghost" size="icon" onClick={onToggle} className="h-8 w-8">
               {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
@@ -65,7 +65,7 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 py-4 px-2 text-center space-y-2">
           {navigationItems.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
@@ -73,7 +73,7 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
             const buttonContent = (
               <Button
                 variant={isActive ? "default" : "ghost"}
-                className={`w-full justify-start ${isCollapsed ? "px-2" : ""}`}
+                className={`w-full ${isCollapsed ? "px-4 justify-center" : "justify-start"}`}
                 asChild
               >
                 <Link href={item.href}>
@@ -99,7 +99,7 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
         </nav>
 
         {/* Theme Toggle */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="p-4 pb-0 border-t border-gray-200 dark:border-gray-700">
           {isCollapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -116,14 +116,32 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
               {theme === "dark" ? (
                 <>
                   <Sun className="h-4 w-4 mr-2" />
-                  Mode Terang
                 </>
               ) : (
                 <>
                   <Moon className="h-4 w-4 mr-2" />
-                  Mode Gelap
                 </>
               )}
+              <span>Ganti Mode</span>
+            </Button>
+          )}
+        </div>
+        <div className="p-4 pb-2 pt-2 border-gray-200 dark:border-gray-700">
+          {isCollapsed ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="w-full">
+                  <LogOut/>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Log Out</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Button variant="ghost" className="w-full justify-start">
+              <LogOut className="h-4 w-4 mr-2" />
+              <span>Log Out</span>
             </Button>
           )}
         </div>

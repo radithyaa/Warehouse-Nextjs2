@@ -78,10 +78,10 @@ export default async function HomePage() {
       </div>
 
       {/* Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="md:grid hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex text-xl items-center gap-2">
               <Package className="h-5 w-5" />
               Kelola Produk
             </CardTitle>
@@ -96,7 +96,7 @@ export default async function HomePage() {
 
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex text-xl items-center gap-2">
               <Warehouse className="h-5 w-5" />
               Kelola Gudang
             </CardTitle>
@@ -111,7 +111,7 @@ export default async function HomePage() {
 
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex text-xl items-center gap-2">
               <BarChart3 className="h-5 w-5" />
               Kelola Inventaris
             </CardTitle>
@@ -126,9 +126,9 @@ export default async function HomePage() {
 
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex text-xl items-center gap-2">
               <History className="h-5 w-5" />
-              Riwayat Transaksi
+              Riwayat History
             </CardTitle>
             <CardDescription>Lihat riwayat semua transaksi stok yang terjadi</CardDescription>
           </CardHeader>

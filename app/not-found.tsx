@@ -14,7 +14,7 @@ export default function NotFound() {
           </p>
         </div>
 
-        <Button asChild className="bg-blue-600 hover:bg-blue-700">
+        <Button asChild variant={"default"}>
           <Link href="/">
             <Home className="mr-2 h-4 w-4" />
             Kembali ke Beranda

@@ -1,81 +1,67 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Plus, Minus, ArrowRightLeft } from "lucide-react"
+import { Plus, Minus, ArrowRightLeft, MoreHorizontal } from "lucide-react"
 import { StockDialog } from "./stock-dialog"
 import { TransferDialog } from "./transfer-dialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu"
 
-interface InventoryActionsProps {
-  warehouseProductId: string
-  productName: string
-  currentStock: number
-  onStockUpdate: () => void
+interface InventoryItem {
+  warehouseId: number
+  productId: number
+  stok: number
+  hargaBeli: number | null
+  hargaJual: number | null
+  product: {
+    id: number
+    name: string
+    code: string
+    unit: string | null
+  }
+  warehouse: {
+    id: number
+    name: string
+  }
 }
 
-export function InventoryActions({
-  warehouseProductId,
-  productName,
-  currentStock,
-  onStockUpdate,
-}: InventoryActionsProps) {
+interface Warehouse {
+  id: number
+  name: string
+  location: string
+}
+
+interface InventoryActionsProps {
+  item: InventoryItem
+  warehouses: Warehouse[]
+}
+
+export function InventoryActions({ item, warehouses }: InventoryActionsProps) {
   return (
-    <TooltipProvider>
-      <div className="flex items-center gap-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <StockDialog
-              warehouseProductId={warehouseProductId}
-              productName={productName}
-              type="in"
-              onSuccess={onStockUpdate}
-            >
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Plus className="h-4 w-4" />
-              </Button>
-            </StockDialog>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Tambah Stok</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <StockDialog
-              warehouseProductId={warehouseProductId}
-              productName={productName}
-              type="out"
-              onSuccess={onStockUpdate}
-            >
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Minus className="h-4 w-4" />
-              </Button>
-            </StockDialog>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Kurangi Stok</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <TransferDialog
-              warehouseProductId={warehouseProductId}
-              productName={productName}
-              currentStock={currentStock}
-              onSuccess={onStockUpdate}
-            >
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <ArrowRightLeft className="h-4 w-4" />
-              </Button>
-            </TransferDialog>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Transfer Stok</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
-    </TooltipProvider>
+    <div className="flex items-end justify-end gap-2">
+      <DropdownMenu>
+  <DropdownMenuTrigger>
+    <Button variant="ghost" className="size-10" size="sm">
+      <MoreHorizontal className="size-4" />
+    </Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent className="w-48" align="end">
+      <DropdownMenuItem asChild >
+        <StockDialog type="add" item={item} >
+          <Button className="text-sm px-2 font-normal w-full h-full flex justify-between" variant={"ghost"}>Tambah Produk</Button>
+        </StockDialog>
+      </DropdownMenuItem>
+      <DropdownMenuItem asChild >
+        <StockDialog type="reduce" item={item} >
+          <Button className="text-sm px-2 font-normal w-full h-full flex justify-between" variant={"ghost"}>Kurangi Produk</Button>
+        </StockDialog>
+      </DropdownMenuItem>
+      <DropdownMenuItem asChild >
+        <TransferDialog warehouses={warehouses} item={item} >
+          <Button className="text-sm px-2 font-normal w-full h-full flex justify-between" variant={"ghost"}>Transfer Produk</Button>
+        </TransferDialog>
+      </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+    </div>
   )
 }

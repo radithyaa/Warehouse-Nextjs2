@@ -122,7 +122,7 @@ export default async function WarehouseDetailPage({ params }: WarehouseDetailPag
                         <TableCell className="text-right font-medium">{wp.stok}</TableCell>
                         <TableCell className="text-right">{formatCurrency(wp.hargaBeli)}</TableCell>
                         <TableCell className="text-right">{formatCurrency(wp.hargaJual)}</TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right flex justify-end items-end">
                           <InventoryActions item={item} warehouses={allWarehouses} />
                         </TableCell>
                       </TableRow>
