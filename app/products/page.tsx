@@ -145,12 +145,12 @@ export default function ProductsPage() {
                   </TableRow>
                 ) : (
                   filteredProducts.map((product, index) => (
-                    <TableRow key={product.id} className="hover:bg-gray-50">
+                    <TableRow key={product.id}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <Link
                           href={`/products/${product.id}`}
-                          className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                          className="font-medium text-primary"
                         >
                           {product.name}
                         </Link>
@@ -161,10 +161,10 @@ export default function ProductsPage() {
                       <TableCell>{getTotalStock(product).toLocaleString()}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end space-x-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleEdit(product)}>
+                          <Button variant="outline" size="sm" onClick={() => handleEdit(product)}>
                             <Pencil className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleDelete(product)}>
+                          <Button variant="outline" size="sm" onClick={() => handleDelete(product)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>

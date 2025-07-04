@@ -50,14 +50,14 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
   return (
     <TooltipProvider>
       <div
-        className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+        className={`bg-background border-r border-b-accent transition-all duration-300 ${
           isCollapsed ? "w-16" : "w-60"
         } flex flex-col h-full`}
       >
         {/* Header */}
-        <div className="py-4 px-2 border-b border-gray-200 dark:border-gray-700">
+        <div className="py-4 px-2 border-b border-b-accent">
           <div className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
-            {!isCollapsed && <h1 className="text-xl pl-4 font-bold text-primary dark:text-primary">Warehouses</h1>}
+            {!isCollapsed && <h1 className="text-xl pl-4 font-bold">Warehouses</h1>}
             <Button variant="ghost" size="icon" onClick={onToggle} className="h-8 w-8 text-primary hover:text-primary">
               {isCollapsed ? <Menu className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4 text-primary hover:text-primary" />}
             </Button>
@@ -99,7 +99,7 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
         </nav>
 
         {/* Theme Toggle */}
-        <div className="pt-2 px-2 pb-0 border-t border-gray-200 dark:border-gray-700">
+        <div className="pt-2 px-2 pb-0 border-t border-b-accent">
           {isCollapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>

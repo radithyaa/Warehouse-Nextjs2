@@ -16,7 +16,7 @@ const ClientLayout = ({ children }: ClientLayoutProps) => {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="flex h-screen bg-background">
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex">
           <AppSidebar isCollapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />

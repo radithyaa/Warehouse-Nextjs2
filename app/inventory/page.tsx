@@ -46,10 +46,6 @@ export default async function InventoryPage({ searchParams }: InventoryPageProps
 
   return (
     <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">Inventaris Gudang</h1>
-        <p className="text-muted-foreground">Kelola stok barang di setiap gudang</p>
-      </div>
 
       <Card>
         <CardHeader>
