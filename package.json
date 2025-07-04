@@ -5,10 +5,10 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start",
     "seed": "node ./prisma/seed.js",
-    "postinstall": "prisma generate"
+    "start": "next start"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -61,6 +61,7 @@
     "sonner": "latest",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "typescript": "latest",
     "vaul": "latest",
     "zod": "^3.24.1"
   },
@@ -69,6 +70,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "postcss": "^8.5",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5"
   }
 }
